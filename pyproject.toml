@@ -35,9 +35,6 @@ dev = [
     "pytest-cov>=6.0.0",
 ]
 
-[tool.ruff.lint]
-select = ["E", "F", "I"]
-ignore = ["D", "ANN", "S101"]
 
 [project.scripts]
 template_train = "src.train:main"

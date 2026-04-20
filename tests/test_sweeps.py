@@ -38,7 +38,7 @@ def test_hydra_sweep(tmp_path: Path) -> None:
         startfile,
         "-m",
         "hydra.sweep.dir=" + str(tmp_path),
-        "model.optimizer.lr=0.005,0.01",
+        "model.optimizer.lr=5e-5,1e-4",
         "++trainer.fast_dev_run=true",
         *overrides,
     ]
@@ -59,10 +59,10 @@ def test_hydra_sweep_ddp_sim(tmp_path: Path) -> None:
         "hydra.sweep.dir=" + str(tmp_path),
         "trainer=ddp_sim",
         "trainer.max_epochs=3",
-        "+trainer.limit_train_batches=0.01",
-        "+trainer.limit_val_batches=0.1",
-        "+trainer.limit_test_batches=0.1",
-        "model.optimizer.lr=0.005,0.01,0.02",
+        "+trainer.limit_train_batches=2",
+        "+trainer.limit_val_batches=2",
+        "+trainer.limit_test_batches=2",
+        "model.optimizer.lr=5e-5,1e-4,5e-4",
         *overrides,
     ]
     run_sh_command(command)
@@ -78,7 +78,7 @@ def test_optuna_sweep(tmp_path: Path) -> None:
     command = [
         startfile,
         "-m",
-        "hparams_search=mnist_optuna",
+        "hparams_search=tiny_shakespeare_optuna",
         "hydra.sweep.dir=" + str(tmp_path),
         "hydra.sweeper.n_trials=10",
         "hydra.sweeper.sampler.n_startup_trials=5",
@@ -98,14 +98,14 @@ def test_optuna_sweep_ddp_sim_wandb(tmp_path: Path) -> None:
     command = [
         startfile,
         "-m",
-        "hparams_search=mnist_optuna",
+        "hparams_search=tiny_shakespeare_optuna",
         "hydra.sweep.dir=" + str(tmp_path),
         "hydra.sweeper.n_trials=5",
         "trainer=ddp_sim",
         "trainer.max_epochs=3",
-        "+trainer.limit_train_batches=0.01",
-        "+trainer.limit_val_batches=0.1",
-        "+trainer.limit_test_batches=0.1",
+        "+trainer.limit_train_batches=2",
+        "+trainer.limit_val_batches=2",
+        "+trainer.limit_test_batches=2",
         "logger=wandb",
     ]
     run_sh_command(command)

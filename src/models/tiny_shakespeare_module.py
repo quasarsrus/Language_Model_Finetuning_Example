@@ -10,6 +10,8 @@ from transformers.modeling_outputs import CausalLMOutputWithPast
 
 
 class TinyShakespeareModule(LightningModule):
+    """Class calling the pre-trained language model for fine-tuning purposes."""
+
     def __init__(
         self,
         model_name: str = "HuggingFaceTB/smolLM-135M",
@@ -23,6 +25,7 @@ class TinyShakespeareModule(LightningModule):
         lora_alpha: int = 32,
         lora_dropout: float = 0.1,
     ) -> None:
+        """Initaliser for the class."""
         super().__init__()
 
         # this line allows to access init params with 'self.hparams' attribute
@@ -59,7 +62,10 @@ class TinyShakespeareModule(LightningModule):
         self.test_rouge = ROUGEScore(rouge_keys="rougeL")
 
     def forward(
-        self, input_ids, attention_mask=None, labels=None
+        self,
+        input_ids: torch.Tensor,
+        attention_mask: torch.Tensor = None,
+        labels: torch.Tensor = None,
     ) -> CausalLMOutputWithPast:
         """Perform a forward pass through the model `self.net`.
 
@@ -83,6 +89,7 @@ class TinyShakespeareModule(LightningModule):
     def model_step(
         self, batch: dict[str, torch.Tensor]
     ) -> tuple[torch.Tensor, torch.Tensor]:
+        """Performs a forward pass and returns loss and logits."""
         outputs = self.forward(
             input_ids=batch["input_ids"],
             attention_mask=batch["attention_mask"],
@@ -97,6 +104,7 @@ class TinyShakespeareModule(LightningModule):
     def training_step(
         self, batch: dict[str, torch.Tensor], batch_idx: int
     ) -> torch.Tensor:
+        """Calls model_step and returns training loss."""
         loss, _ = self.model_step(batch)
 
         # update and log metrics
@@ -116,6 +124,7 @@ class TinyShakespeareModule(LightningModule):
         self.train_loss.reset()
 
     def validation_step(self, batch: dict[str, torch.Tensor], batch_idx: int) -> None:
+        """Calls model_step and returns validation set loss."""
         loss, _ = self.model_step(batch)
 
         # update and log metrics
@@ -123,6 +132,7 @@ class TinyShakespeareModule(LightningModule):
         self.log("val/loss", self.val_loss, on_step=False, on_epoch=True, prog_bar=True)
 
     def on_validation_epoch_end(self) -> None:
+        """Lightning hook that is called when a validation epoch ends."""
         val_loss = self.val_loss.compute()
         self.val_loss_best(val_loss)
 
@@ -137,7 +147,10 @@ class TinyShakespeareModule(LightningModule):
         )
 
     def test_step(self, batch: dict[str, torch.Tensor], batch_idx: int) -> None:
-        assert self.tokenizer is not None
+        """Calls model_step and returns test set loss."""
+        if self.tokenizer is None:
+            raise RuntimeError("Tokenizer is not initialized")
+
         loss, _ = self.model_step(batch)
 
         # update and log metrics

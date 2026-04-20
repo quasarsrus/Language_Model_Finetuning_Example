@@ -55,9 +55,7 @@ class TinyShakespeareDataModule(LightningDataModule):
 
         def teardown(self, stage):
         # Called on every process in DDP.
-        # Clean up after fit or test.
-    ```
-
+        # Clean up after fit or test.'''
     """
 
     def __init__(
@@ -70,6 +68,7 @@ class TinyShakespeareDataModule(LightningDataModule):
         pin_memory: bool = False,
         persistent_workers: bool = False,
     ) -> None:
+        """Initialises the necessary components of the dataloader."""
         super().__init__()
 
         # this line allows to access init params with 'self.hparams' attribute
@@ -83,6 +82,7 @@ class TinyShakespeareDataModule(LightningDataModule):
         self.batch_size_per_device = batch_size
 
     def prepare_data(self) -> None:
+        """Prepares the dataset."""
         load_dataset(
             "Trelis/tiny-shakespeare", cache_dir=self.hparams.data_dir
         )  # <=====
