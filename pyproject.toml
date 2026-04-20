@@ -14,12 +14,14 @@ dependencies = [
     "torch>=2.6.0",
     "torchvision",
     "pytorch-lightning>=2.5.1",
+    "torchmetrics[text]>=0.11.4",
     "torchmetrics>=0.11.4",
     "hydra-core",
     "hydra-colorlog",
     "hydra-optuna-sweeper",
     "rich",
     "certifi>=2025.1.31",
+    "peft>=0.9.0",
     "transformers>=4.51.2",
     "huggingface-hub>=0.30.2",
     "datasets>=3.5.0",
@@ -32,6 +34,10 @@ dev = [
     "pytest>=8.3.5",
     "pytest-cov>=6.0.0",
 ]
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]
+ignore = ["D", "ANN", "S101"]
 
 [project.scripts]
 template_train = "src.train:main"

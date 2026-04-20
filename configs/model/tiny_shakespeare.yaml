@@ -1,0 +1,27 @@
+_target_: src.models.tiny_shakespeare_module.TinyShakespeareModule
+
+model_name: HuggingFaceTB/smolLM-135M
+
+prompt_fraction: 0.5
+max_new_tokens: ${data.block_size}
+
+use_lora: true
+lora_r: 8
+lora_alpha: 32
+lora_dropout: 0.1
+
+optimizer:
+  _target_: torch.optim.AdamW
+  _partial_: true
+  lr: 1e-3
+  weight_decay: 0.01
+
+
+scheduler:
+  _target_: transformers.get_cosine_schedule_with_warmup
+  _partial_: true
+  num_warmup_steps: 42
+  num_training_steps: 840
+
+# compile model for faster training with pytorch 2.0
+torch_compile: false
